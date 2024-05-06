@@ -30,10 +30,10 @@ class HashMap
   end
 
   def has?(key)
-    @buckets.each do |bucket|
-      return true if find_key_in_linked_list(key, bucket.head)
-    end
-    false
+    index = hash(key)
+    return false if @buckets[index].nil?
+    node = find_key_in_linked_list(key, @buckets[index].head)
+    node.nil? ? false : true
   end
 
   def find_key_in_linked_list(key, current_node)
@@ -55,7 +55,10 @@ map.set('john', 'old value')
 map.set('mark', 'peak time')
 map.set('jim', 'bro')
 map.set('john', 'new value')
-map.set('nelson', 'amigo')
+map.set('nelson', 'old')
+map.set('nelson', 'new')
+p map.has?('nelson')
+p map.has?('kevin')
 
 map.buckets.each_with_index do |bucket, index|
   p "In bucket #{index + 1} we have #{bucket}"
