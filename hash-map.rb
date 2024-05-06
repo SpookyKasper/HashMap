@@ -29,6 +29,16 @@ class HashMap
     end
   end
 
+  def get(key)
+    index = hash(key)
+    return if @buckets[index].nil?
+
+    node = find_key_in_linked_list(key, @buckets[index].head)
+    return if node.nil?
+
+    node.value[1]
+  end
+
   def has?(key)
     index = hash(key)
     return false if @buckets[index].nil?
@@ -43,11 +53,6 @@ class HashMap
     current_node = current_node.next_node
     find_key_in_linked_list(key, current_node)
   end
-
-  def get(key)
-    index = hash(key)
-    @buckets[index]
-  end
 end
 
 map = HashMap.new
@@ -57,8 +62,9 @@ map.set('jim', 'bro')
 map.set('john', 'new value')
 map.set('nelson', 'old')
 map.set('nelson', 'new')
-p map.has?('nelson')
-p map.has?('kevin')
+
+p map.get('nelson')
+p map.get('jim')
 
 map.buckets.each_with_index do |bucket, index|
   p "In bucket #{index + 1} we have #{bucket}"
