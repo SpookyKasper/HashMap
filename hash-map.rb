@@ -4,8 +4,10 @@ require '../linked_lists_TOP/linked_lists'
 class HashMap
   attr_accessor :buckets
 
-  def initialize
-    @buckets = Array.new(16)
+  def initialize(capacity)
+    @capacity = capacity
+    @buckets = Array.new(@capacity)
+    @load_factor = 0.8
   end
 
   def hash(key)
@@ -14,6 +16,15 @@ class HashMap
 
     key.each_char { |char| hash_code = prime * hash_code + char.ord }
     hash_code % @buckets.length
+  end
+
+  def grow_buckets
+    @capacity = capacity * 2
+    @new_buckets = Array.new(@capacity)
+    @buckets.each_with_index do |bucket, index|
+      @new_buckets[index] = @buckets[index]
+    end
+    @buckets = @new_buckets
   end
 
   def set(key, value)
@@ -43,6 +54,12 @@ class HashMap
 
   def remove(key)
     index = hash(key)
+    return if @buckets[index].nil?
+
+    if linked_list_length(@buckets[index]) < 2
+      @buckets[index] = nil
+      return
+    end
     remove_key_in_linked_list(key, @buckets[index])
   end
 
@@ -173,13 +190,17 @@ class HashMap
   end
 end
 
-map = HashMap.new
+map = HashMap.new(6)
 map.set('john', 'old value')
 map.set('mark', 'peak time')
 map.set('jim', 'bro')
 map.set('john', 'new value')
 map.set('sara', 'old')
 map.set('nelson', 'new')
+
+map.buckets.each_with_index do |bucket, index|
+  p "In bucket #{index + 1} we have #{bucket}"
+end
 
 p map.remove('sara')
 
