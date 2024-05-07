@@ -70,6 +70,15 @@ class HashMap
     keys.flatten
   end
 
+  def values
+    values = []
+    @buckets.each do |bucket|
+      next if bucket.nil?
+      values << linked_list_values(bucket)
+    end
+    values.flatten
+  end
+
   def find_node_in_hash(key)
     index = hash(key)
     return if @buckets[index].nil?
@@ -95,6 +104,16 @@ class HashMap
       keys << current_node.value[0]
     end
     keys
+  end
+
+  def linked_list_values(list)
+    values = [list.head.value[1]]
+    current_node = list.head
+    until current_node.next_node.nil?
+      current_node = current_node.next_node
+      values << current_node.value[1]
+    end
+    values
   end
 
   # Not sur if this will be useful, maybe better approach than below?
@@ -146,6 +165,7 @@ map.set('nelson', 'new')
 p map.remove('sara')
 
 p map.keys
+p map.values
 
 map.buckets.each_with_index do |bucket, index|
   p "In bucket #{index + 1} we have #{bucket}"
