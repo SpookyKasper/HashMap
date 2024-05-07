@@ -55,6 +55,12 @@ class HashMap
     count
   end
 
+  def clear
+    @buckets.each_with_index do |bucket, index|
+      @buckets[index] = nil
+    end
+  end
+
   def find_node_in_hash(key)
     index = hash(key)
     return if @buckets[index].nil?
@@ -119,8 +125,8 @@ map.set('sara', 'old')
 map.set('nelson', 'new')
 
 p map.remove('sara')
-p map.length
 
+map.clear
 
 map.buckets.each_with_index do |bucket, index|
   p "In bucket #{index + 1} we have #{bucket}"
