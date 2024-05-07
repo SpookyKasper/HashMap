@@ -10,12 +10,16 @@ class HashMap
     @load_factor = 0.8
   end
 
-  def hash(key)
-    hash_code = 0
-    prime = 23
+  def buckets_load_perecentage
+    count_full_buckets * 100 / @capacity / 100.00
+  end
 
-    key.each_char { |char| hash_code = prime * hash_code + char.ord }
-    hash_code % @buckets.length
+  def count_full_buckets
+    count = 0
+    @buckets.each do |bucket|
+      count += 1 unless bucket.nil?
+    end
+    count
   end
 
   def grow_buckets
@@ -28,8 +32,17 @@ class HashMap
     end
   end
 
+  def hash(key)
+    hash_code = 0
+    prime = 23
+
+    key.each_char { |char| hash_code = prime * hash_code + char.ord }
+    hash_code % @buckets.length
+  end
+
   def set(key, value)
     index = hash(key)
+    grow_buckets if buckets_load_perecentage > @load_factor
     if @buckets[index].nil?
       @buckets[index] = LinkedList.new
       @buckets[index].append([key, value])
@@ -58,8 +71,9 @@ class HashMap
     return if @buckets[index].nil?
 
     if linked_list_length(@buckets[index]) < 2
+      value = @buckets[index].head.value[1]
       @buckets[index] = nil
-      return
+      return value
     end
     remove_key_in_linked_list(key, @buckets[index])
   end
@@ -208,10 +222,14 @@ p map.remove('sara')
 p map.keys
 p map.values
 p map.entries
-map.grow_buckets
+
+keys = ['john', 'jack', 'kevin', 'marco', 'maxim', 'christian', 'johny', 'sara', 'nelson']
+values = %w[hello what the fuck is this again the same]
+
+values.each_with_index do |v, i|
+  map.set(keys[i], values[i])
+end
 
 map.buckets.each_with_index do |bucket, index|
   p "In bucket #{index + 1} we have #{bucket}"
 end
-keys = ['john', 'jack', 'kevin', 'marco', 'maxim', 'christian', 'johny', 'sara', 'nelson']
-
