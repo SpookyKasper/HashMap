@@ -30,20 +30,43 @@ class HashMap
   end
 
   def get(key)
-    index = hash(key)
-    return if @buckets[index].nil?
-
-    node = find_key_in_linked_list(key, @buckets[index].head)
+    node = find_node_in_hash(key)
     return if node.nil?
 
     node.value[1]
   end
 
   def has?(key)
-    index = hash(key)
-    return false if @buckets[index].nil?
-    node = find_key_in_linked_list(key, @buckets[index].head)
+    node = find_node_in_hash(key)
     node.nil? ? false : true
+  end
+
+  def remove(key)
+    index = hash(key)
+    remove_key_in_linked_list(key, @buckets[index])
+  end
+
+  def find_node_in_hash(key)
+    index = hash(key)
+    return if @buckets[index].nil?
+
+    find_key_in_linked_list(key, @buckets[index].head)
+  end
+
+  def remove_key_in_linked_list(key, list)
+    current_node = list.head
+    if current_node.value[0] == key
+      list.head = current_node.next_node
+      return
+    end
+    until current_node.next_node.value[0] == key
+      current_node = current_node.next_node
+      return nil if current_node.next_node == nil
+    end
+    value = current_node.next_node.value[1]
+    current_node.next_node = current_node.next_node.next_node
+
+    return value
   end
 
   def find_key_in_linked_list(key, current_node)
@@ -60,11 +83,10 @@ map.set('john', 'old value')
 map.set('mark', 'peak time')
 map.set('jim', 'bro')
 map.set('john', 'new value')
-map.set('nelson', 'old')
+map.set('sara', 'old')
 map.set('nelson', 'new')
 
-p map.get('nelson')
-p map.get('jim')
+map.remove('mark')
 
 map.buckets.each_with_index do |bucket, index|
   p "In bucket #{index + 1} we have #{bucket}"
