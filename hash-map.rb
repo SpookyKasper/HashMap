@@ -19,12 +19,13 @@ class HashMap
   end
 
   def grow_buckets
-    @capacity = capacity * 2
+    @capacity = @capacity * 2
     @new_buckets = Array.new(@capacity)
-    @buckets.each_with_index do |bucket, index|
-      @new_buckets[index] = @buckets[index]
-    end
+    entries = self.entries
     @buckets = @new_buckets
+    entries.each do |entry|
+      set(entry[0], entry[1])
+    end
   end
 
   def set(key, value)
@@ -207,6 +208,7 @@ p map.remove('sara')
 p map.keys
 p map.values
 p map.entries
+map.grow_buckets
 
 map.buckets.each_with_index do |bucket, index|
   p "In bucket #{index + 1} we have #{bucket}"
